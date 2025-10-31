@@ -60,6 +60,7 @@ import { CategoriesService } from '../../../core/categories.service';
             <tr>
               <th class="text-left p-3">Name</th>
               <th class="text-left p-3">Color</th>
+              <th class="text-left p-3">Budget</th>
               <th class="p-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -79,6 +80,16 @@ import { CategoriesService } from '../../../core/categories.service';
                   name="color-{{ c.id }}"
                 />
               </td>
+              <td class="p-3">
+                <input
+                  class="border rounded px-2 py-1 w-full text-right"
+                  type="number"
+                  step="0.01"
+                  [(ngModel)]="c.editBudget"
+                  name="budget-{{ c.id }}"
+                  placeholder="e.g. 200"
+                />
+              </td>
               <td class="p-3 text-right space-x-2">
                 <button
                   class="px-3 py-1 rounded bg-blue-600 text-white"
@@ -95,7 +106,7 @@ import { CategoriesService } from '../../../core/categories.service';
               </td>
             </tr>
             <tr *ngIf="!rows().length">
-              <td class="p-4 text-center text-gray-500" colspan="3">
+              <td class="p-4 text-center text-gray-500" colspan="4">
                 No categories
               </td>
             </tr>
@@ -122,7 +133,7 @@ export class CategoriesComponent implements OnInit {
           ...c,
           editName: c.name,
           editColor: c.color || '',
-          editBudget: c.budget ?? null,
+          editBudget: c.budget != null ? Number(c.budget) : null,
         })),
       );
     });
@@ -141,8 +152,14 @@ export class CategoriesComponent implements OnInit {
   update(row: any) {
     const dto: any = { name: row.editName };
     if (row.editColor !== undefined) dto.color = row.editColor;
-    if (row.editBudget !== undefined && row.editBudget !== null)
-      dto.budget = +row.editBudget;
+    if (row.editBudget !== undefined) {
+      if (row.editBudget === null || row.editBudget === '') {
+        dto.budget = null;
+      } else {
+        const parsed = Number(row.editBudget);
+        dto.budget = Number.isFinite(parsed) ? parsed : null;
+      }
+    }
     this.cats.update(row.id, dto).subscribe(() => this.load());
   }
 
