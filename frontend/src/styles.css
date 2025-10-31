@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Background: radial gradient + fin grid pattern (mask) */
+.app-bg {
+  /* gradient */
+  background:
+    radial-gradient(
+      1200px 600px at 10% -10%,
+      rgba(43, 139, 255, 0.25),
+      transparent 60%
+    ),
+    radial-gradient(
+      1000px 500px at 110% 0%,
+      rgba(16, 185, 129, 0.18),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+.dark .app-bg {
+  background:
+    radial-gradient(
+      1200px 600px at 10% -10%,
+      rgba(43, 139, 255, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      1000px 500px at 110% 0%,
+      rgba(16, 185, 129, 0.12),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #0b1220 0%, #0b1220 100%);
+}
+
+/* Subtilna mreža preko (mask) */
+.app-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(100, 116, 139, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(100, 116, 139, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(
+    800px 400px at 50% -10%,
+    #000 40%,
+    transparent 70%
+  );
+}
+.dark .app-bg::before {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+}
+
+/* Globalna tipografija: čitljivo u light i dark modu */
+@layer base {
+  html,
+  body {
+    @apply text-slate-800 dark:text-slate-200;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply text-slate-900 dark:text-slate-100;
+  }
+  table thead th {
+    @apply text-slate-600 dark:text-slate-200;
+  }
+}
+
+/* Reusable UI helpers */
+@layer components {
+  /* GLASS card, ali čitljivo i u dark modu */
+  .ui-card {
+    @apply rounded-2xl bg-white/90 border border-slate-200 shadow-soft backdrop-blur;
+  }
+  .dark .ui-card {
+    /* tamnija kartica sa dovoljnom neprozirnošću */
+    @apply bg-slate-900/75 border-slate-700;
+  }
+
+  /* Osnovna tipografija unutar kartica (da se ne “izgubi”) */
+  .ui-card h1,
+  .ui-card h2,
+  .ui-card h3 {
+    @apply text-slate-900 dark:text-slate-100;
+  }
+  .ui-card,
+  .ui-card p,
+  .ui-card label,
+  .ui-card td,
+  .ui-card th,
+  .ui-card span {
+    @apply text-slate-700 dark:text-slate-200;
+  }
+
+  /* Inputi/selectovi unutar kartica */
+  .ui-card input,
+  .ui-card select,
+  .ui-card textarea {
+    @apply bg-white/95 dark:bg-slate-800/90 border border-slate-300 dark:border-slate-600
+           text-slate-900 dark:text-slate-100 rounded px-3 py-2;
+  }
+
+  .ui-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-medium
+           border border-slate-300/70 bg-white hover:bg-slate-50 active:scale-[.99] transition
+           text-slate-800 dark:text-slate-100;
+  }
+  .dark .ui-btn {
+    @apply border-slate-700/60 bg-slate-800 hover:bg-slate-800/80;
+  }
+
+  .ui-btn-primary {
+    @apply bg-brand-600 text-white border-transparent hover:bg-brand-500;
+  }
+}
