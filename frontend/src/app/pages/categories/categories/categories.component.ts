@@ -39,6 +39,7 @@ import { CategoriesService } from '../../../core/categories.service';
           <input
             class="border rounded px-3 py-2 w-full"
             type="number"
+            min="0"
             step="0.01"
             [(ngModel)]="form.budget"
             name="budget"
@@ -60,6 +61,7 @@ import { CategoriesService } from '../../../core/categories.service';
             <tr>
               <th class="text-left p-3">Name</th>
               <th class="text-left p-3">Color</th>
+              <th class="text-left p-3">Budget</th>
               <th class="p-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -79,6 +81,17 @@ import { CategoriesService } from '../../../core/categories.service';
                   name="color-{{ c.id }}"
                 />
               </td>
+              <td class="p-3">
+                <input
+                  class="border rounded px-2 py-1 w-full text-right"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  [(ngModel)]="c.editBudget"
+                  name="budget-{{ c.id }}"
+                  placeholder="e.g. 200"
+                />
+              </td>
               <td class="p-3 text-right space-x-2">
                 <button
                   class="px-3 py-1 rounded bg-blue-600 text-white"
@@ -95,7 +108,7 @@ import { CategoriesService } from '../../../core/categories.service';
               </td>
             </tr>
             <tr *ngIf="!rows().length">
-              <td class="p-4 text-center text-gray-500" colspan="3">
+              <td class="p-4 text-center text-gray-500" colspan="4">
                 No categories
               </td>
             </tr>
@@ -122,7 +135,7 @@ export class CategoriesComponent implements OnInit {
           ...c,
           editName: c.name,
           editColor: c.color || '',
-          editBudget: c.budget ?? null,
+          editBudget: this.toBudgetModel(c.budget),
         })),
       );
     });
@@ -131,7 +144,10 @@ export class CategoriesComponent implements OnInit {
   create() {
     const dto: any = { name: this.form.name };
     if (this.form.color) dto.color = this.form.color;
-    if (this.form.budget != null) dto.budget = this.form.budget;
+    const budget = this.normalizeBudgetInput(this.form.budget);
+    if (budget !== undefined && budget !== null) {
+      dto.budget = budget;
+    }
     this.cats.create(dto).subscribe(() => {
       this.form = { name: '', color: '', budget: null as number | null };
       this.load();
@@ -141,12 +157,36 @@ export class CategoriesComponent implements OnInit {
   update(row: any) {
     const dto: any = { name: row.editName };
     if (row.editColor !== undefined) dto.color = row.editColor;
-    if (row.editBudget !== undefined && row.editBudget !== null)
-      dto.budget = +row.editBudget;
+    const budget = this.normalizeBudgetInput(row.editBudget);
+    if (budget !== undefined) {
+      dto.budget = budget;
+    }
     this.cats.update(row.id, dto).subscribe(() => this.load());
   }
 
   remove(id: number) {
     this.cats.remove(id).subscribe(() => this.load());
+  }
+
+  private toBudgetModel(raw: any): number | null {
+    if (raw === null || raw === undefined || raw === '') {
+      return null;
+    }
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+  }
+
+  private normalizeBudgetInput(value: any): number | null | undefined {
+    if (value === undefined) {
+      return undefined;
+    }
+    if (value === null || value === '') {
+      return null;
+    }
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed < 0) {
+      return undefined;
+    }
+    return parsed;
   }
 }
