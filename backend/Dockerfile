@@ -2,9 +2,12 @@
 FROM composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --prefer-dist --no-progress
+# >>> DODAJ --no-scripts da spriječi artisan tokom build-a
+RUN composer install --no-dev --no-interaction --prefer-dist --no-progress --no-scripts
 COPY . .
-RUN composer dump-autoload --optimize
+# Autoload bez pokretanja laravel skripti
+RUN composer dump-autoload --optimize --no-scripts
+
 
 # ===== Vite (assets) – ako NEMAŠ front assets u Laravelu, možeš preskočiti cijeli ovaj stage =====
 FROM node:20-alpine AS assets
