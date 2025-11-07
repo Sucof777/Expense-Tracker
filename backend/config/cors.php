@@ -19,7 +19,7 @@ return [
     'allowed_methods' => ['*'],
 
     // Angular dev server
-    'allowed_origins' => ['http://localhost:4200', 'http://127.0.0.1:4200', 'expense-tracker-git-main-sucof777s-projects.vercel.app'],
+    'allowed_origins' => ['http://localhost:4200', 'http://127.0.0.1:4200', 'https://expenset-sucof.vercel.app'],
 
     'allowed_origins_patterns' => [],
 
