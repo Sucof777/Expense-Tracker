@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private base = '/api';
+  private base = environment.prod.apiUrl;
   constructor(private http: HttpClient) {}
 
   get<T = any>(u: string, params?: any) {
