@@ -25,26 +25,16 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $data['first_name'] . ' ' . $data['last_name'],
                 'email' => $data['email'],
-                'password' => bcrypt($data['password']),
+                'password' => bcrypt($data['password'])
             ]);
-
-            Auth::login($user); // Auto-login after registration
-            $r->session()->regenerate();
 
             return response()->json([
                 'message' => 'Registered successfully',
                 'user' => $user
             ], 201);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::warning('Registration validation failed', ['errors' => $e->errors()]);
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-
         } catch (\Exception $e) {
-            Log::error('Registration error', [
+            Log::error('Registration failed', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
